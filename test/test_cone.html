@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> test_cone</title>
+</head>
+<body>
+<table>
+    <tr>
+        <td> isovalue</td>
+            <td>
+                <input type="range"   min="3"   max="50"   value="6"   class="slider"   style="z-index: 100; position: absolute">
+            </td>
+    </tr>
+</table>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript" src="test2.json"></script>
+<script type="text/javascript">
+// Load script from https://unpkg.com/vtk.js then...
+var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+var actor = vtk.Rendering.Core.vtkActor.newInstance();
+var mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+var cone = vtk.Filters.Sources.vtkConeSource.newInstance();
+
+actor.setMapper(mapper);
+mapper.setInputConnection(cone.getOutputPort());
+
+var renderer = fullScreenRenderer.getRenderer();
+renderer.addActor(actor);
+renderer.resetCamera();
+var renderWindow = fullScreenRenderer.getRenderWindow();
+renderWindow.render();
+
+var slider = document.querySelector('.slider');//文档对象模型Document引用的querySelector()方法返回文档中与指定选择器或选择器组匹配的第一个 html元素Element
+slider.addEventListener('input', function (e) {
+  var resolution = Number(e.target.value);
+  cone.setResolution(resolution);
+
+  renderWindow.render();
+});
+
+
+</script>
+
+</body>
+</html>

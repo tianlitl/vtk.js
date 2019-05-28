@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<body>
+<!--<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>-->
+<!--<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>-->
+<script type="text/javascript">
+<!--const fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();-->
+<!--const renderer = fullScreenRenderer.getRenderer();-->
+<!--const renderWindow = fullScreenRenderer.getRenderWindow();-->
+
+// ----------------------------------------------------------------------------
+// Example code
+<!--测试pi-->
+<!--alert("pi"+Math.PI);-->
+<!--alert("cos"+Math.round(Math.cos(Math.PI/2)));-->
+
+// ----------------------------------------------------------------------------
+  const sphereSource = vtk.Filters.Sources.vtkSphereSource.newInstance();
+  sphereSource.setRadius(1);
+  sphereSource.setThetaResolution(100);
+  sphereSource.setPhiResolution(100);
+  sphereSource.setCenter(10,10,10);
+  const actor2 = vtk.Rendering.Core.vtkActor.newInstance();
+  const mapper2 = vtk.Rendering.Core.vtkMapper.newInstance();
+
+  actor2.setMapper(mapper2);
+  mapper2.setInputConnection(sphereSource.getOutputPort());
+  renderer.addActor(actor2);
+
+  const Line = vtk.Filters.Sources.vtkLineSource.newInstance();
+  Line.setPoint1=[0,0,0];
+  Line.setPoint2=[100,100,100];
+  const actor = vtk.Rendering.Core.vtkActor.newInstance();
+  const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+
+  actor.setMapper(mapper);
+  mapper.setInputConnection(Line.getOutputPort());
+  renderer.addActor(actor);
+  actor.getProperty().setRepresentation(1);//设置颜色 两倍 如何做到每个原子颜色不一样？??
+  actor.getProperty().setColor(1,0,1);
+
+  renderer.resetCamera();
+  renderWindow.render();
+
+</script>
+</body>
+</html>

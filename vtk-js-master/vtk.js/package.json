@@ -1,0 +1,143 @@
+{
+  "name": "vtk.js",
+  "version": "8.3.17",
+  "description": "Visualization Toolkit for the Web",
+  "keywords": [
+    "3d",
+    "visualization",
+    "webgl",
+    "medical",
+    "scientific",
+    "vtk",
+    "paraview",
+    "geometry",
+    "point cloud",
+    "mesh",
+    "gl-vis",
+    "volume",
+    "graphics",
+    "paraviewweb"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kitware/vtk-js.git"
+  },
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/kitware/vtk-js/issues"
+  },
+  "homepage": "https://github.com/kitware/vtk-js#readme",
+  "main": "./dist/vtk.js",
+  "dependencies": {
+    "base64-js": "1.2.1",
+    "blueimp-md5": "2.10.0",
+    "commander": "2.11.0",
+    "gl-matrix": "3.0.0",
+    "jszip": "3.1.4",
+    "pako": "1.0.6",
+    "seedrandom": "2.4.3",
+    "shelljs": "0.7.8",
+    "webvr-polyfill": "0.10.8",
+    "webworker-promise": "0.4.2"
+  },
+  "devDependencies": {
+    "babel-plugin-istanbul": "5.1.1",
+    "dotenv": "^6.1.0",
+    "karma": "4.0.1",
+    "karma-chrome-launcher": "2.2.0",
+    "karma-coverage": "1.1.2",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-tap": "4.1.4",
+    "karma-tap-pretty-reporter": "4.1.0",
+    "karma-webpack": "3.0.5",
+    "kw-doc": "1.3.0",
+    "kw-web-suite": "8.0.0",
+    "node-pre-gyp": "0.11.0",
+    "resemblejs": "2.10.3",
+    "tap-markdown": "1.2.1",
+    "tap-spec": "5.0.0",
+    "tape": "4.9.1",
+    "tape-catch": "1.0.6",
+    "wslink": "0.1.8",
+    "xml2js": "0.4.19"
+  },
+  "peerDependencies": {
+    "wslink": "^0.1.8",
+    "shader-loader": "^1.3.1",
+    "worker-loader": "^2.0.0"
+  },
+  "scripts": {
+    "size": "size-limit --why --config ./webpack.config.js",
+    "validate": "prettier --config ./prettier.config.js --list-different \"Sources/**/*.js\" \"Examples/**/*.js\"",
+    "reformat": "prettier --config ./prettier.config.js --write \"Sources/**/*.js\" \"Examples/**/*.js\"",
+    "reformat-only": "prettier --single-quote --trailing-comma es5 --print-width 80 --arrow-parens always --write",
+    "doc": "kw-doc -c ./Documentation/config.js",
+    "doc:www": "npm t -- --single-run && kw-doc -c ./Documentation/config.js -s",
+    "doc:publish": "kw-doc -c ./Documentation/config.js -mp",
+    "example": "node ./Utilities/ExampleRunner/example-runner-cli.js -c ./Documentation/config.js",
+    "build": "webpack-dev-server --config webpack.dev.js",
+    "build:release": "webpack --config webpack.prod.js --progress --hide-modules",
+    "test": "karma start ./karma.conf.js",
+    "test:travis": "karma start ./karma.conf.js --browsers ChromeHeadlessNoSandbox --single-run",
+    "test:debug": "karma start ./karma.conf.js --no-single-run",
+    "test:firefox": "karma start ./karma.conf.js --browsers Firefox",
+    "test:firefox-debug": "karma start ./karma.conf.js --browsers Firefox --no-single-run",
+    "commit": "git cz",
+    "semantic-release": "semantic-release"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "size-limit": [
+    {
+      "path": "./Sources/index.js",
+      "limit": "200 KB"
+    }
+  ],
+  "bin": {
+    "vtkDataConverter": "./Utilities/DataGenerator/convert-cli.js",
+    "xml2json": "./Utilities/XMLConverter/xml2json-cli.js"
+  },
+  "nyc": {
+    "include": [
+      "Sources/**/*.js"
+    ],
+    "exclude": [
+      "Sources/**/test/*.js"
+    ]
+  },
+  "gitHead": "e37e204e372862041dddf38f959ea9950cb0c84e",
+  "_id": "vtk.js@8.3.17",
+  "_npmVersion": "6.4.1",
+  "_nodeVersion": "8.15.1",
+  "_npmUser": {
+    "name": "kwrobot",
+    "email": "sebastien.jourdain+robot@kitware.com"
+  },
+  "dist": {
+    "integrity": "sha512-6Ky45oQcrTXfftf9s5NMa98/P+Pwvv9jKSFACr2+UWoWkPDnTyQi+5KtcD2VM3tUZN8zlNQrL0hrsviTkWEPfg==",
+    "shasum": "b08d53105566d7f7520a781958a93080f16f8e20",
+    "tarball": "https://registry.npmjs.org/vtk.js/-/vtk.js-8.3.17.tgz",
+    "fileCount": 727,
+    "unpackedSize": 16772370,
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJcnSbNCRA9TVsSAnZWagAASCEP/3BQaHrqOYCXEJYWTfg+\nKm6grJmDb1T4qW5EnIKQ6RlyTFwDiTphXVX0wuIxZ9VXEYs9Qp/O8bqTs73T\nHmPwDtzxdC+3aKn/p/sw9whapuj8TNuGyl9/vxI0fQ8tKKd7cGZDWoGGyh8e\n9Q3g57dNZfW7z9bjd6gJeiWSs3QP0NiZAKq9DGp7q8FIyiROchhlcoWFfF3S\nWjCh1r0Idu8oqTM/Ii9Cl6hOUPWtkXm29vuMVuEtFxj65cBOTZI6IG+cK/w2\n7inhhrwa6fWR2Fb1NQyEjwVVkEtIwxR7nCZOKCMGCd8S1ejApqkKHOzTFc8J\nKuOlxqbjFvPoehCHFBII1BEyyGfKmXDogCsLlVXkupNwPQsRsXN5sBBa0Al9\n8FQe51Qxem1VjV/uDglqEjR65moY882ulg9NmCes96oTLw2TWbhVtfRvE5P8\ndYv3ngNu/TAw2+Y48EZj9RY3QEg/C1Tqmjux2/jCsIWwcVKcKNi0m4mbADMh\n2z0hjwm8EZB2rID3M4VgCf8+jYFVSSSrCe8NKsuVUPVsGpvcOG//hn69//AX\nzZZOUk199mKZB5KKqxePK7UR31M2Pgcia4qYUZJLDB/agzTo0+c6zfvzoHDM\n3sjsFhWFjI84rikUTFbnbrIByU6jQD/4r6dC9kXIrN7C70lyZaNIWFsH/fO7\ngc6U\r\n=qjr3\r\n-----END PGP SIGNATURE-----\r\n"
+  },
+  "maintainers": [
+    {
+      "name": "sebastien.jourdain",
+      "email": "sebastien.jourdain@kitware.com"
+    }
+  ],
+  "directories": {},
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/vtk.js_8.3.17_1553802957131_0.7002589038526605"
+  },
+  "_hasShrinkwrap": false,
+  "_shasum": "b08d53105566d7f7520a781958a93080f16f8e20",
+  "_resolved": "https://registry.npmjs.org/vtk.js/-/vtk.js-8.3.17.tgz",
+  "_from": "vtk.js@latest"
+}

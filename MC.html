@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript">
+<!--import controlPanel from 'controller.html'-->
+const fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+const renderer = fullScreenRenderer.getRenderer();
+const renderWindow = fullScreenRenderer.getRenderWindow();
+
+<!--fullScreenRenderWindow.addController(controlPanel);-->
+const actor = vtk.Rendering.Core.vtkActor.newInstance();
+alert(actor);
+const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+
+const marchingCube=vtk.Filters.General.vtkImageMarchingCubes.newInstance(
+actor.setMapper(mapper);
+mapper.setInputConnection(marchingCube.getOutputPort());
+
+
+
+
+<!--const reader = vtk.IO.Core.vtkHttpDataSetReader.newInstance({ fetchGzip: true });-->
+<!--marchingCube.setInputConnection(reader.getOutputPort());-->
+
+
+        renderer.resetCamera();
+            <!--renderWindow.setSize(500,500);-->
+            renderWindow.render();
+
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript">
+  // --------------------------------------------------------------------------
+  // Example code
+  // --------------------------------------------------------------------------
+  <!--pipLine：-->
+  <!--首先引入vtk.js，然后与vtk类似，导入MarchingCube-->
+  <!--然后将数据传入mapper，再将actor与mapper绑定。-->
+  <!--vtk.js有一个全新的类vtkFullScreenRenderWindow，该类将在浏览器全屏显示窗口。-->
+  <!--从vtkFullScreenRenderWindow类获取render，将actor加入到render内，-->
+  <!--reader读取headsq.vti输入到MarchingCube，提取等值面（设置等值面的值setContourValue( )）-->
+  <!--再次通过vtkFullScreenRenderWindow获取window，调用window的render()方法开始渲染。-->
+
+  var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+  var renderWindow = fullScreenRenderer.getRenderWindow();
+  var renderer = fullScreenRenderer.getRenderer();
+
+  var actor_mc              = vtk.Rendering.Core.vtkActor.newInstance();
+  var mapper_mc             = vtk.Rendering.Core.vtkMapper.newInstance();
+  var marchingCube       =vtk.Filters.General.vtkImageMarchingCubes.newInstance(
+  {
+  contourValue:0.0, //设置等值面的值
+  computeNormals: true, //启用/禁用标量字段中点法线的计算 true：效果好但需要额外的计算
+  mergePoints: true,//当生成形成等值面的三角形时，指示是否要合并重合点
+});      // MarchingCube算法
+
+  actor_mc.setMapper(mapper_mc);
+  mapper_mc.setInputConnection(marchingCube.getOutputPort());
+
+  <!--var reader = vtk.IO.Core.vtkHttpDataSetReader.newInstance({ fetchGzip: true });//参见HttpDataSetReader的API-->
+  <!--基本上格式由json数据文件组成-->
+
+ <!--reader-->
+  <!--.setUrl('headsq.vti', { loadData: true })   //httpdatasetreader读入同级目录下的headsq.vti 或headsq.vti下的index.json-->
+  <!--.then(() => {-->
+    <!--const data = reader.getOutputData(); //获取数据-->
+    <!--alert(data);-->
+    <!--const dataRange = data-->
+      <!--.getPointData()-->
+      <!--.getScalars()-->
+      <!--.getRange();-->
+    <!--const firstIsoValue = (dataRange[0] + dataRange[1]) / 3;  //试试改变一下分母？-->
+    <!--marchingCube.setContourValue(firstIsoValue);-->
+
+    var reader = vtk.IO.XML.vtkXMLImageDataReader.newInstance();//通过vtkXMLImageDataReader可以reader单独的vti文件
+        reader.setUrl(`writeImageData.vti`).then(() => {
+         reader.loadData().then(() => {
+             const data = reader.getOutputData(); //获取数据
+                alert(data);
+
+    marchingCube.setContourValue(0);
+    marchingCube.setInputConnection(reader.getOutputPort());
+    renderer.addActor(actor_mc);
+    renderer.getActiveCamera().set({ position: [1, 1, 0], viewUp: [0, 0, -1] });
+    renderer.resetCamera();
+    renderWindow.render();
+  });
+});
+</script>
+</body>
+</html>

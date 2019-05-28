@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<script src="myjs.js"></script>-->
+    <title>Title</title>
+</head>
+<body>
+    <script>
+        document.getElementById("pid").innerHTML="hello world";
+    </script>
+ <script>
+ <!--定义变量-->
+        document.write("<h1>标签1</h1>")
+        var i=10;
+        var j=10;
+        var m=i+j;
+        document.write(m);
+        var string="hello";
+        var i=10;
+        var flag=true;
+        var arv=[1,2,3,4];
+        var arv1=new Array("hello","like","you !");
+        var arv2=new Array();
+        arv2[0]=10;
+        arv2[1]=20;
+        arv2[2]=50;
+        document.write(arv[0]);
+        document.write(arv1[2]);
+        document.write(arv2[2]);
+    </script>
+    <p> i=10,j=10,i+j=?</p>
+    <p id="sumid"></p>
+    <button onclick="mysum()">结果</button>
+    <script>
+        <!--运算符-->
+        function mysum(){
+        var i=10;
+        var j=10;
+        var m=i+j;
+        document.getElementById("sumid").innerHTML=m;
+        }
+        var i1="10";
+        var j1=10;
+        document.write(i1==j1);
+        document.write(i1===j1);
+         <!--document.write(i1>&&j1<100);-->
+    </script>
+    <script>
+        var i=5;
+        switch(i){
+        case 1:
+        document.write("i=1");
+        break;
+        case 2:
+        document.write("i=2");
+        break;
+        default:
+        document.write("条件不满足");
+        break;
+        }
+    </script>
+    <script>
+        var i=[1,2,3,4,5];
+        for(var j=0;j<5;j++)
+        document.write(i[j]+",");
+        var i=1;
+        while(i<10){
+        document.write(i+"<br/>");
+        i++;
+        }
+
+        for(var i=0;i<10;i++)
+        {
+        if(i==5)   continue;
+        <!--注意和break的区别-->
+        document.write("i="+i+"<br/>");}
+    </script>
+<script>
+    <!--函数-->
+    function demo(a,b){
+    var sum=a+b;
+    alert(sum);
+    }
+   alert(demo(1,2));   <!--调用函数-->
+</script>
+<button onclick="demo(1,2)">按钮</button>
+
+</body>
+</html>

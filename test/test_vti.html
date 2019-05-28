@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> test_silder</title>
+<table>
+    <tr>
+        <td style="background-color:#FF0000"> isovalue</td>
+            <td>
+                <input type="range"   min="0.0"   max="1.0"   step="0.05"   class="isoValue"   value="0.0" style="z-index: 100; position: absolute">
+            </td>
+    </tr>
+</table>
+<meta charset="UTF-8">
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript" src="test.json"></script>
+<script type="text/javascript" src="elements.json"></script>
+<script type="text/javascript" >
+<!--获取json文件-->
+
+$.getJSON ("test.json", function (data)
+        {
+$.getJSON ("elements.json", function (data2)
+        {
+             var length=data.positions_cartesian.length;//笛卡尔坐标的个数
+             var a=data.geometry[0];//为了读取json文件中的a,b,c,alpha,beta,gamma
+             var b=data.geometry[1];
+             var c=data.geometry[2];
+             var alpha_data=data.geometry[3];
+             var beta_data=data.geometry[4];
+             var gamma_data=data.geometry[5];
+             <!--以上的值并不是角度值需要进行转换到角度值才可以-->
+             var alpha=180*alpha_data/Math.PI;
+             var beta=180*beta_data/Math.PI;
+             var gamma=180*gamma_data/Math.PI;
+             <!--//计算顶点位置坐标-->
+             var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();//{background:[0,191,255]}???
+             var renderer = fullScreenRenderer.getRenderer();
+             var renderWindow = fullScreenRenderer.getRenderWindow();
+             var i=0;
+             item=1 + 2*Math.round(Math.cos(alpha))*Math.round(Math.cos(beta))*Math.round(Math.cos(gamma)) - Math.round(Math.pow(Math.cos(alpha),2))
+  for(var x=0;x<118;x++){
+    for(var k=0;k<data.nspecies;k++){
+        for(var j=0;j<data.composition[k];j++){
+             if(data.species[k]==data2.atoms[x].id){
+             var u=data.positions_fractional[i][0];
+             var v=data.positions_fractional[i][1];
+             var w=data.positions_fractional[i][2];
+             <!--原子分数坐标对应的笛卡尔坐标-->
+             var x_position=a*u+c*w*Math.round(Math.cos(beta))+b*v*Math.round(Math.cos(gamma));
+             var y_position=b*v*Math.round(Math.sin(gamma))+c*w*(Math.round(Math.cos(alpha)) - Math.round(Math.cos(beta))*Math.round(Math.cos(gamma))) / Math.round(Math.sin(gamma));
+             var z_position=c*w*item/Math.round(Math.sin(gamma));
+             var Sphere = vtk.Filters.Sources.vtkSphereSource.newInstance();
+             Sphere.setRadius(0.5);//设置球的半径  参照spheresource中的index 观察球的属性
+             Sphere.setThetaResolution(100);//设置球表面精度，值越大球的光滑程度越高 经度
+             Sphere.setPhiResolution(100);//纬度
+             Sphere.setCenter(x_position,y_position,z_position);
+             var mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+             var actor = vtk.Rendering.Core.vtkActor.newInstance();
+             actor.setMapper(mapper);
+             mapper.setInputConnection(Sphere.getOutputPort());
+             renderer.addActor(actor);
+
+
+            var r=data2.atoms[x].elementColor[0];//获取element.json文件中的RGB颜色信息
+            var g=data2.atoms[x].elementColor[1];
+            var b=data2.atoms[x].elementColor[2];
+
+             actor.getProperty().setRepresentation(2);//设置颜色
+             actor.getProperty().setColor(r,g,b);
+
+             <!--actor.getProperty().setColor(0.8,0.5,1);//Li 淡紫色-->
+
+ i++;
+   }//if
+
+}
+   }
+   }
+             var c_x=c * Math.round(Math.cos(beta));
+             var c_y=c * (Math.round(Math.cos(alpha)) - Math.round(Math.cos(beta))*Math.round(Math.cos(gamma))) / Math.round(Math.sin(gamma));
+             var c_z=c * Math.round(Math.sqrt(item)) / Math.round(Math.sin(gamma));
+             const Line = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line.setPoint1(0,0,0);
+             Line.setPoint2(a,0,0);
+             const actor1 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper1 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor1.setMapper(mapper1);
+             mapper1.setInputConnection(Line.getOutputPort());
+             renderer.addActor(actor1);
+
+             const Line2 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line2.setPoint1(0,0,0);
+             Line2.setPoint2(b*Math.round(Math.cos(gamma)),b*Math.round(Math.sin(gamma)),0);
+             const actor2 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper2 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor2.setMapper(mapper2);
+             mapper2.setInputConnection(Line2.getOutputPort());
+             renderer.addActor(actor2);
+
+             const Line3 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line3.setPoint1(0,0,0);
+             Line3.setPoint2(c_x,c_y,c_z);
+             const actor3 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper3 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor3.setMapper(mapper3);
+             mapper3.setInputConnection(Line3.getOutputPort());
+             renderer.addActor(actor3);
+
+             const Line4 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line4.setPoint1(a,0,0);
+             Line4.setPoint2(a+c_x,c_y,c_z);
+             const actor4 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper4 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor4.setMapper(mapper4);
+             mapper4.setInputConnection(Line4.getOutputPort());
+             renderer.addActor(actor4);
+
+             const Line5 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line5.setPoint1(a,0,0);
+             Line5.setPoint2(a+b*Math.round(Math.cos(gamma)),b*Math.round(Math.sin(gamma)),0);
+             const actor5 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper5 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor5.setMapper(mapper5);
+             mapper5.setInputConnection(Line5.getOutputPort());
+             renderer.addActor(actor5);
+
+             const Line6 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line6.setPoint1(b*Math.round(Math.cos(gamma)),b*Math.round(Math.sin(gamma)),0);
+             Line6.setPoint2(a+b*Math.round(Math.cos(gamma)),b*Math.round(Math.sin(gamma)),0);
+             const actor6 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper6 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor6.setMapper(mapper6);
+             mapper6.setInputConnection(Line6.getOutputPort());
+             renderer.addActor(actor6);
+
+             const Line7 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line7.setPoint1(b*Math.round(Math.cos(gamma)),b*Math.round(Math.sin(gamma)),0);
+             Line7.setPoint2(b*Math.round(Math.cos(gamma))+c_x,b*Math.round(Math.sin(gamma))+c_y,c_z);
+             const actor7 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper7 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor7.setMapper(mapper7);
+             mapper7.setInputConnection(Line7.getOutputPort());
+             renderer.addActor(actor7);
+
+             const Line8 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line8.setPoint1(c_x,c_y,c_z);
+             Line8.setPoint2(b*Math.round(Math.cos(gamma))+c_x,b*Math.round(Math.sin(gamma))+c_y,c_z);
+             const actor8 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper8= vtk.Rendering.Core.vtkMapper.newInstance();
+             actor8.setMapper(mapper8);
+             mapper8.setInputConnection(Line8.getOutputPort());
+             renderer.addActor(actor8);
+
+             const Line9 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line9.setPoint1(c_x,c_y,c_z);
+             Line9.setPoint2(a+c_x,c_y,c_z);
+             const actor9 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper9= vtk.Rendering.Core.vtkMapper.newInstance();
+             actor9.setMapper(mapper9);
+             mapper9.setInputConnection(Line9.getOutputPort());
+             renderer.addActor(actor9);
+
+             const Line10 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line10.setPoint1(a+c_x,c_y,c_z);
+             Line10.setPoint2(a+c_x+b*Math.round(Math.cos(gamma)),c_y+b*Math.round(Math.sin(gamma)),c_z);
+             const actor10 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper10= vtk.Rendering.Core.vtkMapper.newInstance();
+             actor10.setMapper(mapper10);
+             mapper10.setInputConnection(Line10.getOutputPort());
+             renderer.addActor(actor10);
+
+             const Line11 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line11.setPoint1(b*Math.round(Math.cos(gamma))+c_x,b*Math.round(Math.sin(gamma))+c_y,c_z);
+             Line11.setPoint2(a+c_x+b*Math.round(Math.cos(gamma)),c_y+b*Math.round(Math.sin(gamma)),c_z);
+             const actor11 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper11= vtk.Rendering.Core.vtkMapper.newInstance();
+             actor11.setMapper(mapper11);
+             mapper11.setInputConnection(Line11.getOutputPort());
+             renderer.addActor(actor11);
+
+             const Line12 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line12.setPoint1(a+b*Math.round(Math.cos(gamma)),b*Math.round(Math.sin(gamma)),0);
+             Line12.setPoint2(a+c_x+b*Math.round(Math.cos(gamma)),c_y+b*Math.round(Math.sin(gamma)),c_z);
+             const actor12 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper12= vtk.Rendering.Core.vtkMapper.newInstance();
+             actor12.setMapper(mapper12);
+             mapper12.setInputConnection(Line12.getOutputPort());
+             renderer.addActor(actor12);
+
+              var actor_mc   = vtk.Rendering.Core.vtkActor.newInstance();
+              renderer.addActor(actor_mc);
+              var mapper_mc   = vtk.Rendering.Core.vtkMapper.newInstance();
+              <!--用移动立方体法提取等值面-->
+              var marchingCube       =vtk.Filters.General.vtkImageMarchingCubes.newInstance(
+              {
+              contourValue:0.0, //设置等值面的值
+              computeNormals: true, //启用/禁用标量字段中点法线的计算 true：效果好但需要额外的计算
+              mergePoints: true,//当生成形成等值面的三角形时，指示是否要合并重合点
+            });      // MarchingCube算法
+
+              <!--将生成的等值面数据进行Mapper-->
+              mapper_mc.setInputConnection(marchingCube.getOutputPort());
+              <!--把Mapper的输出作为渲染引擎的输入-->
+              actor_mc.setMapper(mapper_mc);
+
+              function updateIsoValue(e) {
+              const isoValue = Number(e.target.value);
+              marchingCube.setContourValue(isoValue);
+              renderWindow.render();
+            }
+              <!--读入vti文件-->
+
+              var reader = vtk.IO.XML.vtkXMLImageDataReader.newInstance();
+              marchingCube.setInputConnection(reader.getOutputPort());
+
+           reader.setUrl(`v.vti`).then(() => {//此时可以直接读取 v.vti和head-binary-zlib.vti还有LIDC2_test
+             reader.loadData().then(() => {
+                const data = reader.getOutputData(); //获取数据
+                alert(data);
+
+            const firstIsoValue =  3926 / 3;  //dataRange[1];
+            const el = document.querySelector('.isoValue');
+            el.setAttribute('min', 0);//dataRange[0]=0
+            el.setAttribute('max', 3926);
+            el.setAttribute('value', firstIsoValue);
+            el.addEventListener('input', updateIsoValue);
+            marchingCube.setContourValue(firstIsoValue);
+
+     marchingCube.setContourValue(50);
+    marchingCube.setInputConnection(reader.getOutputPort());
+    renderer.addActor(actor_mc);
+    renderer.getActiveCamera().set({ position: [1, 1, 0], viewUp: [0, 0, -1] });
+    renderer.resetCamera();
+    renderWindow.render();
+
+});
+});
+});
+});
+</script>
+</head>
+<body>
+
+</body>
+</html>

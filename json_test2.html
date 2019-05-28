@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript" src="test2.json"></script>
+<script type="text/javascript" >
+<!--获取json文件-->
+
+$.getJSON ("test2.json", function (data)
+        {
+             var length=data.positions_cartesian.length;//笛卡尔坐标的个数
+             var a=data.geometry[0];//为了读取json文件中的a,b,c,alpha,beta,gamma
+             var b=data.geometry[1];
+             var c=data.geometry[2];
+             var alpha=data.geometry[3];
+             var beta=data.geometry[4];
+             var gamma=data.geometry[5];
+             <!--document.write("a："+a+"<br>");-->
+             <!--document.write("b："+b+"<br>");-->
+             <!--document.write("c："+c+"<br>");-->
+             <!--document.write("阿尔法："+alpha+"<br>");-->
+             <!--document.write("贝塔："+beta+"<br>");-->
+             <!--document.write("伽马："+gamma+"<br>");-->
+
+             //计算顶点位置坐标
+             <!--document.write("test："+Math.sqrt(9)+"<br>");//测试sqrt函数-->
+
+             var origin=[0,0,0];
+             <!--document.write("origin："+origin+"<br>");-->
+             var b_position=[b*Math.cos(gamma),b*Math.sin(gamma),0 ];
+             <!--document.write("b_position："+b_position+"<br>");-->
+             var c_x=c * Math.cos(beta);
+             <!--document.write("c_x："+c_x+"<br>");-->
+             var c_y=c * (Math.cos(alpha) - Math.cos(beta)*Math.cos(gamma)) / Math.sin(gamma);
+             var c_z=c * Math.sqrt(1 + 2*Math.cos(alpha)*Math.cos(beta)*Math.cos(gamma) - Math.cos(alpha)^2 - Math.cos(beta)^2 - Math.cos(gamma)^2) / Math.sin(gamma);
+             var c_position=[c_x,c_y,c_z];
+             <!--document.write("c_position："+c_position+"<br>");-->
+
+
+             const fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+             const renderer = fullScreenRenderer.getRenderer();
+             const renderWindow = fullScreenRenderer.getRenderWindow();
+
+
+             const Line = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line.setPoint1(0,0,0);
+             Line.setPoint2(a,0,0);
+             const actor = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor.setMapper(mapper);
+             mapper.setInputConnection(Line.getOutputPort());
+             renderer.addActor(actor);
+
+             const Line2 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line2.setPoint1(0,0,0);
+             Line2.setPoint2(b*Math.cos(gamma),b*Math.sin(gamma),0);
+             const actor2 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper2 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor2.setMapper(mapper2);
+             mapper2.setInputConnection(Line2.getOutputPort());
+             renderer.addActor(actor2);
+
+             const Line3 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line3.setPoint1(0,0,0);
+             Line3.setPoint2(c_x,c_y,c_z);
+             const actor3 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper3 = vtk.Rendering.Core.vtkMapper.newInstance();
+             actor3.setMapper(mapper3);
+             mapper3.setInputConnection(Line3.getOutputPort());
+             renderer.addActor(actor3);
+
+             renderer.resetCamera();
+             renderWindow.render();
+        });
+
+
+
+</script>
+</head>
+<body>
+
+</body>
+</html>

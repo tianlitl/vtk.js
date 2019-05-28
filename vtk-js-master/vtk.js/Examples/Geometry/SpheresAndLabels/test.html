@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript" src="./style.module.css"></script>
+<!--<script src="test.js"></script>-->
+<script type="text/javascript">
+    // --------------------------------------------------------------------------
+    // Example code
+    // --------------------------------------------------------------------------
+<!--首先引入vtk.js，然后与vtk类似，先导入椎体数据源，然后将数据传入mapper，再将actor与mapper绑定。-->
+<!--之后vtk.js有一个全新的类vtkFullScreenRenderWindow，该类将在浏览器全屏显示窗口。-->
+<!--从vtkFullScreenRenderWindow类获取render，将actor加入到render内，再次通过vtkFullScreenRenderWindow获取window，-->
+<!--调用window的render()方法开始渲染。-->
+
+let textCtx = null;
+let dims = null;
+var cone = vtk.Filters.Sources.vtkSphereSource.newInstance({radius: 5,thetaResolution: 1000});
+var mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+var actor = vtk.Rendering.Core.vtkActor.newInstance();
+var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+
+actor.setMapper(mapper);
+mapper.setInputConnection(cone.getOutputPort());
+
+var renderer = fullScreenRenderer.getRenderer({ background: [0.3, 0.6, 0.3] });
+renderer.addActor(actor);
+renderer.resetCamera();
+
+var renderWindow = fullScreenRenderer.getRenderWindow();
+renderWindow.render();
+
+const psMapper = vtk.Rendering.Core.vtkPixelSpaceCallbackMapper.newInstance();
+psMapper.setInputConnection(sphereSource.getOutputPort());
+
+psMapper.setCallback((coordsList) => {
+  if (textCtx && dims) {
+    textCtx.clearRect(0, 0, dims.width, dims.height);
+    coordsList.forEach((xy, idx) => {
+      textCtx.font = '12px serif';
+      textCtx.textAlign = 'center';
+      textCtx.textBaseline = 'middle';
+      textCtx.fillText(`p ${idx}`, xy[0], dims.height - xy[1]);
+    });
+  }
+});
+
+const textActor = vtk.Rendering.Core.vtkActor.newInstance();
+textActor.setMapper(psMapper);
+
+// ----------------------------------------------------------------------------
+// Add the actor to the renderer and set the camera based on it 将actor添加到渲染器并根据它设置camera
+// ----------------------------------------------------------------------------
+
+renderer.addActor(actor);
+renderer.addActor(textActor);
+renderer.resetCamera();
+
+const opeGLRenderWindow = vtk.Rendering.OpenGL.RenderWindow.newInstance();
+renderWindow.addView(opeGLRenderWindow);
+
+const container = document.createElement('div');
+container.classList.add(style.container);
+document.querySelector('body').appendChild(container);
+opeGLRenderWindow.setContainer(container);
+
+const textCanvas = document.createElement('canvas');
+textCanvas.classList.add(style.container, 'textCanvas');
+container.appendChild(textCanvas);
+
+textCtx = textCanvas.getContext('2d');
+
+const InterActor = vtk.Rendering.Core.RenderWindowInterActor.newInstance();
+InterActor.setView(opeGLRenderWindow);
+InterActor.initialize();
+InterActor.bindEvents(container);
+
+InterActor.setInterActorStyle(vtkInterActorStyleTrackballCamera.newInstance());
+
+function resize() {
+  dims = container.getBoundingClientRect();
+  opeGLRenderWindow.setSize(dims.width, dims.height);
+  textCanvas.setAttribute('width', dims.width);
+  textCanvas.setAttribute('height', dims.height);
+  renderWindow.render();
+}
+window.addEventListener('resize', resize);
+
+resize();
+
+
+</script>
+</body>
+</html>

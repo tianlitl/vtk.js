@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> BVSdata_vtk</title>
+</head>
+<body>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript">
+
+const fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+const renderer = fullScreenRenderer.getRenderer();
+const renderWindow = fullScreenRenderer.getRenderWindow();
+// ----------------------------------------------------------------------------
+// Example code
+// ----------------------------------------------------------------------------
+const actor = vtk.Rendering.Core.vtkActor.newInstance();
+renderer.addActor(actor);
+
+const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+actor.setMapper(mapper);
+
+// Build pipeline
+const sphere = vtk.Common.DataModel.vtkSphere.newInstance();
+const sample = vtk.Imaging.Hybrid.vtkSampleFunction.newInstance({
+  implicitFunction: sphere,
+  sampleDimensions: [50, 50, 50],
+  modelBounds: [-0.5, 0.5, -0.5, 0.5, -0.5, 0.5],
+});
+alert(sample);
+const mCubes = vtk.Filters.General.vtkImageMarchingCubes.newInstance({ contourValue: 1.0 });
+// Connect the pipeline proper
+mCubes.setInputConnection(sample.getOutputPort());
+mapper.setInputConnection(mCubes.getOutputPort());
+            renderer.resetCamera();
+            renderWindow.render();
+
+</script>
+
+</body>
+</html>

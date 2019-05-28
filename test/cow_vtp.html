@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> cow_vtp</title>
+</head>
+<body>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript">
+// Load script from https://unpkg.com/vtk.js then...
+//读取sphere.vtk  pipline:
+  <!--然后将数据传入mapper，再将actor与mapper绑定。-->
+  <!--vtk.js有一个全新的类vtkFullScreenRenderWindow，该类将在浏览器全屏显示窗口。-->
+  <!--从vtkFullScreenRenderWindow类获取renderer，将actor加入到renderer内，-->
+  <!--定义vtkPolyDataMapper对象reader读取sphere.vtk以实现图像数据到渲染图元的转换-->
+  <!--再次通过vtkFullScreenRenderWindow获取window，调用window的render()方法开始渲染。-->
+
+var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+var renderer = fullScreenRenderer.getRenderer();
+var renderWindow = fullScreenRenderer.getRenderWindow();
+const resetCamera = renderer.resetCamera;
+const render = renderWindow.render;
+
+//对于vtkPolyData类型数据的渲染管线，需要定义vtkPolyDataMapper对象，用于接受vtkPolyData图形数据以实现图像数据到渲染图元的转换
+
+   <!--const reader = vtk.IO.Legacy.vtkPolyDataReader.newInstance();-->
+  <!--var reader = vtk.IO.Core.vtkHttpDataSetReader.newInstance({ fetchGzip: true });//参见HttpDataSetReader的API-->
+
+  var reader = vtk.IO.XML.vtkXMLImageDataReader.newInstance();
+    reader.setUrl(`cow.vtp`).then(() => {
+     reader.loadData().then(() => {
+        const data = reader.getOutputData(); //获取数据
+        alert(data);
+        resetCamera();
+        render();
+    });
+    });
+
+  var mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+  mapper.setInputConnection(reader.getOutputPort());
+
+  var actor = vtk.Rendering.Core.vtkActor.newInstance();
+  actor.setMapper(mapper);
+  renderer.addActor(actor);
+</script>
+
+</body>
+</html>

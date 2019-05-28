@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="t.json"></script>
+<script type="text/javascript" >
+<!--获取json文件-->
+
+$.getJSON ("t.json", function (data)
+        {
+             var length=data.positions_cartesian.length;//笛卡尔坐标的个数
+             <!--alert(Math.sqrt(9));-->
+             <!--alert(Math.pow(2,3));-->
+             var a=data.geometry[0];//为了读取json文件中的a,b,c,alpha,beta,gamma
+             var b=data.geometry[1];
+             var c=data.geometry[2];
+             var alpha_data=data.geometry[3];
+             alert("pi"+Math.PI);
+             var beta_data=data.geometry[4];
+             var gamma_data=data.geometry[5];
+             var alpha=180*alpha_data/Math.PI;
+             alert("alpha"+alpha);//alpha 没有被认为是度数！！！所以后面的坐标才会是错的
+             alert("cos(90)"+Math.round(Math.cos(Math.PI/2)));
+
+
+             alert("test" + Math.pow(Math.cos(alpha),2));
+
+
+
+
+             <!--document.write("a："+a+"<br>");-->
+             <!--document.write("b："+b+"<br>");-->
+             <!--document.write("c："+c+"<br>");-->
+             <!--document.write("阿尔法："+alpha+"<br>");-->
+             <!--document.write("贝塔："+beta+"<br>");-->
+             <!--document.write("伽马："+gamma+"<br>");-->
+
+             //计算顶点位置坐标
+             <!--document.write("test："+Math.sqrt(9)+"<br>");//测试sqrt函数-->
+
+             var origin=[0,0,0];
+             <!--document.write("origin："+origin+"<br>");-->
+             var b_position=[b*Math.cos(gamma),b*Math.sin(gamma),0 ];
+             <!--document.write("b_position："+b_position+"<br>");-->
+             var c_x=c * Math.cos(beta);
+             <!--document.write("c_x："+c_x+"<br>");-->
+             var c_y=c * (Math.cos(alpha) - Math.cos(beta)*Math.cos(gamma)) / Math.sin(gamma);
+             var c_z=c * Math.sqrt(1 + 2*Math.cos(alpha)*Math.cos(beta)*Math.cos(gamma) - Math.cos(alpha)^2 - Math.cos(beta)^2 - Math.cos(gamma)^2) / Math.sin(gamma);
+             var c_position=[c_x,c_y,c_z];
+             document.write("c_position："+c_position+"<br>");
+
+
+             const fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+             const renderer = fullScreenRenderer.getRenderer();
+             const renderWindow = fullScreenRenderer.getRenderWindow();
+
+
+             const Line = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line.setPoint1=origin;
+             Line.setPoint2=a_position;
+             const actor = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+
+             actor.setMapper(mapper);
+             mapper.setInputConnection(Line.getOutputPort());
+             renderer.addActor(actor);
+
+             const Line2 = vtk.Filters.Sources.vtkLineSource.newInstance();
+             Line2.setPoint1=origin;
+             Line2.setPoint2=b_position;
+             const actor2 = vtk.Rendering.Core.vtkActor.newInstance();
+             const mapper2 = vtk.Rendering.Core.vtkMapper.newInstance();
+
+             actor2.setMapper(mapper2);
+             mapper2.setInputConnection(Line2.getOutputPort());
+             renderer.addActor(actor2);
+
+             renderer.resetCamera();
+             renderWindow.render();
+
+
+
+
+             <!--document.write("原子种类"+data.composition.length+"<br>");//输出原子个数-->
+             <!--for(var i=0;i<data.composition.length;i++){-->
+             <!--document.write("每种原子的个数"+data.composition[i]+"<br>");-->
+             <!--}-->
+             <!--document.write(Object.prototype.toString.call(data.composition));//判断数据类型array-->
+
+             <!--f.writeLine("length");//-->
+             <!--document.write(length+"<br>");//判断笛卡尔坐标的个数；-->
+             <!--for(var i=0;i<length;i++){-->
+                <!--for(var j=0;j<3;j++){-->
+                <!--document.write(data.positions_cartesian[i][0]+"<br>");//84*3-->
+                <!--document.write(data.positions_cartesian[i][1]+"<br>");//84*3-->
+                <!--document.write(data.positions_cartesian[i][2]+"<br>");//84*3-->
+                <!--document.write(Object.prototype.toString.call(data.positions_cartesian[i][j]));//判断数据类型-->
+                <!--}-->
+             <!--}-->
+        });
+
+
+
+</script>
+</head>
+<body>
+
+</body>
+</html>

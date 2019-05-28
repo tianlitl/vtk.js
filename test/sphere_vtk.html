@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> sphere_vtk</title>
+</head>
+<body>
+<script type="text/javascript" src="https://unpkg.com/@babel/polyfill@7.0.0/dist/polyfill.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vtk.js"></script>
+<script type="text/javascript">
+<!--// Load script from https://unpkg.com/vtk.js then...-->
+<!--//读取sphere.vtk  pipline:-->
+  <!--然后将数据传入mapper，再将actor与mapper绑定。-->
+  <!--vtk.js有一个全新的类vtkFullScreenRenderWindow，该类将在浏览器全屏显示窗口。-->
+  <!--从vtkFullScreenRenderWindow类获取renderer，将actor加入到renderer内，-->
+  <!--定义vtkPolyDataMapper对象reader读取sphere.vtk以实现图像数据到渲染图元的转换-->
+  <!--再次通过vtkFullScreenRenderWindow获取window，调用window的render()方法开始渲染。-->
+
+var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance();
+var renderer = fullScreenRenderer.getRenderer();
+var renderWindow = fullScreenRenderer.getRenderWindow();
+const resetCamera = renderer.resetCamera;
+const render = renderWindow.render;
+
+//对于vtkPolyData类型数据的渲染管线，需要定义vtkPolyDataMapper对象，用于接受vtkPolyData图形数据以实现图像数据到渲染图元的转换
+
+const reader = vtk.IO.Legacy.vtkPolyDataReader.newInstance();
+
+reader.setUrl(`sphere.vtk`).then(() => {   //为什么读入BVSdata.vtk文件不显示？DATASET STRUCTURED_GRID  DATASET POLYDATA
+  reader.loadData().then(() =>{
+    alert(reader);
+    
+    const polyData = reader.getOutputData();
+    alert(polyData);//undefined
+
+    <!--test=reader.getDimension();-->
+    <!--alert(test);-->
+
+  <!--const polyData = reader.getOutputData();-->
+  <!--alert(polyData);-->
+    var mapper = vtk.Rendering.Core.vtkMapper.newInstance();
+    mapper.setInputConnection(reader.getOutputPort());
+
+  var actor = vtk.Rendering.Core.vtkActor.newInstance();
+  actor.setMapper(mapper);
+  <!--mapper.setInputData(polyData);-->
+  renderer.addActor(actor);
+
+  resetCamera();
+  render();
+});
+});
+
+</script>
+
+</body>
+</html>
